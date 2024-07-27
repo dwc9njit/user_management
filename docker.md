@@ -21,10 +21,12 @@ This guide will walk you through the process of using Docker Compose to manage a
   - **Password**: `adminpassword`
 - Configure the PostgreSQL server in PgAdmin:
   - **Right-click** on 'Servers' in the left pane and select **'Create' > 'Server'**.
-  - In the 'General' tab, give your server a name (e.g., `MyAppDB`).
+  - **In the center of the pgAdmin webpage, click on Add New Server**.
+  - In the 'General' tab, give your server a name (e.g., `myServer`).
   - Switch to the 'Connection' tab and enter:
     - **Hostname/address**: `postgres`
     - **Port**: `5432`
+    - **Maintenace_database**: `myappdb`
     - **Username**: `user`
     - **Password**: `password`
     - These credentials correspond to the environment variables set in the `docker-compose.yml` for the PostgreSQL service.
