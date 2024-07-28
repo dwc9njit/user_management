@@ -1,4 +1,4 @@
-# Define a base stage with a Debian Bookworm base image that includes the latest glibc update
+# Base stage with Debian Bookworm base image
 FROM python:3.12-bookworm as base
 
 # Set environment variables
@@ -9,9 +9,10 @@ ENV PYTHONUNBUFFERED=1 \
     PIP_DISABLE_PIP_VERSION_CHECK=on \
     QR_CODE_DIR=/myapp/qr_codes
 
+# Set the working directory
 WORKDIR /app
 
-# Update system and specifically upgrade libc-bin to the latest version available
+# Update system, install dependencies, and upgrade libc-bin
 RUN apt-get update && apt-get install -y --no-install-recommends \
     gcc \
     libpq-dev \
@@ -28,12 +29,12 @@ RUN python -m venv /.venv \
 
 # Create coverage-data and htmlcov directories with correct permissions
 RUN mkdir -p /app/coverage-data /app/htmlcov \
-    && chmod -R 777 /app/coverage-data /app/htmlcov
+    && chmod -R 755 /app/coverage-data /app/htmlcov
 
-# Define a second stage for the runtime, using the same Debian Bookworm slim image
+# Runtime stage with Debian Bookworm slim image
 FROM python:3.12-slim-bookworm as final
 
-# Upgrade libc-bin in the final stage to ensure security patch is applied
+# Upgrade libc-bin in the final stage
 RUN apt-get update && apt-get install -y libc-bin \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
@@ -59,7 +60,7 @@ COPY --chown=myuser:myuser . .
 # Adjust permissions for the entire /app directory, coverage-data, and htmlcov for the non-root user
 USER root
 RUN chown -R myuser:myuser /app /app/coverage-data /app/htmlcov \
-    && chmod -R 777 /app /app/coverage-data /app/htmlcov
+    && chmod -R 755 /app /app/coverage-data /app/htmlcov
 USER myuser
 
 # Inform Docker that the container listens on the specified port at runtime.
