@@ -3,6 +3,10 @@
 # Run the tests with coverage
 docker-compose exec fastapi pytest --cov=app --cov-report=xml:/tmp/coverage_report/coverage.xml --cov-report=html:/tmp/coverage_report/html --cov-report=term-missing
 
+# Ensure the coverage report directory exists and has the correct permissions
+mkdir -p ~/IS601/final_project/user_management/coverage_report
+chmod -R 777 ~/IS601/final_project/user_management/coverage_report
+
 # Copy the coverage reports to the host machine
 docker cp user_management-fastapi-1:/tmp/coverage_report/html ~/IS601/final_project/user_management/coverage_report/html
 docker cp user_management-fastapi-1:/tmp/coverage_report/coverage.xml ~/IS601/final_project/user_management/coverage_report/coverage.xml

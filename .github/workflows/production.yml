@@ -48,18 +48,12 @@ jobs:
           pip install -r requirements.txt
           
       - name: Ensure coverage-data directory exists
-        run: mkdir -p /home/runner/work/IS601/final_project/user_management/coverage_report && chmod -R 777 /home/runner/work/IS601/final_project/user_management/coverage_report
+        run: mkdir -p ~/IS601/final_project/user_management/coverage_report && chmod -R 777 ~/IS601/final_project/user_management/coverage_report
           
       - name: Run tests with Pytest
         env:
           DATABASE_URL: postgresql+asyncpg://user:password@localhost:5432/myappdb  # Configure the DATABASE_URL environment variable for tests
-        run: pytest --cov=app --cov-report=xml:/home/runner/work/IS601/final_project/user_management/coverage_report/coverage.xml --cov-report=html:/home/runner/work/IS601/final_project/user_management/coverage_report/html --cov-report=term-missing
-
-      - name: Upload coverage report
-        uses: actions/upload-artifact@v2
-        with:
-          name: coverage-report
-          path: /home/runner/work/IS601/final_project/user_management/coverage_report
+        run: pytest --cov=app --cov-report=xml:~/IS601/final_project/user_management/coverage_report/coverage.xml --cov-report=html:~/IS601/final_project/user_management/coverage_report/html --cov-report=term-missing
 
   build-and-push-docker:
     needs: test
