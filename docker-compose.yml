@@ -1,4 +1,4 @@
-version: '3.8'
+version: '3.9'
 
 services:
   postgres:
@@ -14,6 +14,8 @@ services:
       retries: 5
     networks:
       - app-network
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
 
   pgadmin:
     image: dpage/pgadmin4
@@ -24,7 +26,7 @@ services:
     depends_on:
       - postgres
     ports:
-      - "5050:80" # Expose PgAdmin on port 5050 of the host
+      - "5050:80"
     volumes:
       - pgadmin-data:/var/lib/pgadmin
     networks:
@@ -32,8 +34,12 @@ services:
 
   fastapi:
     build: .
+    environment:
+      - PYTHONPATH=/app
     volumes:
-      - ./:/myapp/
+      - ./:/app/
+      - coverage-data:/app/coverage-data
+      - htmlcov-data:/app/htmlcov
     depends_on:
       postgres:
         condition: service_healthy
@@ -54,6 +60,8 @@ services:
 volumes:
   postgres-data:
   pgadmin-data:
+  coverage-data:
+  htmlcov-data:
 
 networks:
   app-network:

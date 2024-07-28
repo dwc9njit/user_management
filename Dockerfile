@@ -9,7 +9,7 @@ ENV PYTHONUNBUFFERED=1 \
     PIP_DISABLE_PIP_VERSION_CHECK=on \
     QR_CODE_DIR=/myapp/qr_codes
 
-WORKDIR /myapp
+WORKDIR /app
 
 # Update system and specifically upgrade libc-bin to the latest version available
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -26,6 +26,10 @@ RUN python -m venv /.venv \
     && pip install --upgrade pip \
     && pip install -r requirements.txt
 
+# Create coverage-data and htmlcov directories with correct permissions
+RUN mkdir -p /app/coverage-data /app/htmlcov \
+    && chmod -R 777 /app/coverage-data /app/htmlcov
+
 # Define a second stage for the runtime, using the same Debian Bookworm slim image
 FROM python:3.12-slim-bookworm as final
 
@@ -41,17 +45,22 @@ COPY --from=base /.venv /.venv
 ENV PATH="/.venv/bin:$PATH" \
     PYTHONUNBUFFERED=1 \
     PYTHONFAULTHANDLER=1 \
-    QR_CODE_DIR=/myapp/qr_codes
+    QR_CODE_DIR=/app/qr_codes
 
 # Set the working directory
-WORKDIR /myapp
+WORKDIR /app
 
 # Create and switch to a non-root user
 RUN useradd -m myuser
-USER myuser
 
 # Copy application code with appropriate ownership
 COPY --chown=myuser:myuser . .
+
+# Adjust permissions for the entire /app directory, coverage-data, and htmlcov for the non-root user
+USER root
+RUN chown -R myuser:myuser /app /app/coverage-data /app/htmlcov \
+    && chmod -R 777 /app /app/coverage-data /app/htmlcov
+USER myuser
 
 # Inform Docker that the container listens on the specified port at runtime.
 EXPOSE 8000
