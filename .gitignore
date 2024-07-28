@@ -1,8 +1,10 @@
 venv
-_*pycache*_
+__pycache__
 qr_codes
 *.db
 *.sqlite
 .vscode
 .env
 .coverage
+coverage_report/html
+coverage-data
