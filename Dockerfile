@@ -54,7 +54,11 @@ WORKDIR /app
 RUN useradd -m myuser
 
 # Copy application code with appropriate ownership
-COPY . .
+COPY --chown=myuser:myuser . .
+
+# Copy the coverage-data and htmlcov directories from the base stage
+COPY --from=base /app/coverage-data /app/coverage-data
+COPY --from=base /app/htmlcov /app/htmlcov
 
 # Adjust permissions for the entire /app directory, coverage-data, and htmlcov for the non-root user
 USER root
