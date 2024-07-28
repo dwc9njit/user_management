@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Ensure the coverage_report directory exists and has the right permissions
+mkdir -p $GITHUB_WORKSPACE/coverage_report && chmod -R 777 $GITHUB_WORKSPACE/coverage_report
+
 # Run the tests with coverage
 docker-compose exec fastapi pytest --cov=app --cov-report=xml:/tmp/coverage_report/coverage.xml --cov-report=html:/tmp/coverage_report/html --cov-report=term-missing
 
